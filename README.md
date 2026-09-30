@@ -1,8 +1,10 @@
 # WikiMasters+
 
-Extension Chrome **non officielle** qui améliore l'expérience sur [wiki-masters.com](https://www.wiki-masters.com) : révélé des cartes animé, statistiques de tirages, pose de tags en un clic, outils sur les cartes et chargement plus rapide des pages.
+Extension **non officielle** pour Chrome et Firefox qui améliore l'expérience sur [wiki-masters.com](https://www.wiki-masters.com) : révélé des cartes animé, statistiques de tirages, pose de tags en un clic, outils sur les cartes et chargement plus rapide des pages.
 
 > WikiMasters+ n'est ni affiliée ni approuvée par WikiMasters. Elle n'automatise pas l'ouverture des paquets et ne contourne aucune protection du site.
+
+![Aperçu](store/images/capture-1-ouverture.png)
 
 ## Fonctionnalités
 
@@ -38,13 +40,34 @@ Chaque fonctionnalité peut être désactivée dans l'onglet **Réglages** du po
 
 ## Installation
 
-### Depuis le Chrome Web Store
-*(lien à ajouter après publication)*
+| Navigateur | Version minimale | Installation |
+|---|---|---|
+| Chrome, Edge, Brave, Opera | Chrome 116 | Chrome Web Store *(lien à ajouter après publication)* |
+| Firefox | Firefox 128 | addons.mozilla.org *(lien à ajouter après publication)* |
 
-### Manuellement (mode développeur)
-1. Télécharge la dernière version dans [Releases](../../releases) et dézippe-la, ou clone ce dépôt.
+### Installation manuelle depuis les Releases
+
+Chaque [release](../../releases) contient deux fichiers :
+- `wikimasters-plus-X.Y.Z.zip` pour Chrome et les navigateurs Chromium ;
+- `wikimasters-plus-firefox-X.Y.Z.zip` pour Firefox.
+
+**Chrome / Edge / Brave**
+1. Dézippe `wikimasters-plus-X.Y.Z.zip`.
 2. Ouvre `chrome://extensions` et active le **Mode développeur**.
-3. Clique sur **Charger l'extension non empaquetée** et choisis le dossier `extension`.
+3. Clique sur **Charger l'extension non empaquetée** et choisis le dossier dézippé.
+
+**Firefox** (installation temporaire, jusqu'à la fermeture du navigateur)
+1. Ouvre `about:debugging` puis **Ce Firefox**.
+2. Clique sur **Charger un module complémentaire temporaire** et choisis `wikimasters-plus-firefox-X.Y.Z.zip`.
+3. Si rien n'apparaît sur le site : `about:addons` → WikiMasters+ → **Permissions** → autorise wiki-masters.com.
+
+Pour une installation permanente sur Firefox, passe par addons.mozilla.org.
+
+### Depuis le code source
+
+Clone le dépôt, puis :
+- **Chrome** : charge le dossier `extension/` comme extension non empaquetée.
+- **Firefox** : lance `./scripts/package-firefox.sh` et charge `dist/firefox/manifest.json` dans `about:debugging`.
 
 ## Confidentialité
 
@@ -54,6 +77,7 @@ Tout reste dans ton navigateur. L'extension n'envoie aucune donnée à son auteu
 
 ```
 extension/        code de l'extension (Manifest V3, sans étape de build)
+firefox/          manifest Firefox (même code)
   manifest.json
   background.js   service worker : alarmes, notifications, badge, historique
   inject.js       observation des réponses d'ouverture + cache local (contexte de la page)
@@ -68,10 +92,11 @@ store/            textes et visuels du Chrome Web Store
 scripts/          outils (création du zip)
 ```
 
-Créer le zip à envoyer sur le Chrome Web Store :
+Créer les zips :
 
 ```bash
-./scripts/package.sh
+./scripts/package.sh          # Chrome Web Store
+./scripts/package-firefox.sh  # Firefox (addons.mozilla.org)
 ```
 
 ## Crédits

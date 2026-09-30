@@ -34,11 +34,12 @@ Sur la page du dépôt vide, clique sur **uploading an existing file**, glisse t
 - Après la publication sur le store, ajoute le lien du store dans **Website** et dans le `README.md`.
 
 ### 4. Créer une release
-1. Crée le zip : `./scripts/package.sh` (ou zippe le **contenu** du dossier `extension/`).
+1. Crée le zip Chrome : `./scripts/package.sh` (ou zippe le **contenu** du dossier `extension/`).
 2. Sur GitHub : **Releases** → **Draft a new release**.
 3. **Tag** : `v1.8.0` · **Titre** : `WikiMasters+ 1.8.0`.
 4. Colle le contenu de `CHANGELOG.md` pour la version.
-5. Joins `dist/wikimasters-plus-1.8.0.zip` puis **Publish release**.
+5. Lance aussi `./scripts/package-firefox.sh`, puis joins **les deux zips** : `dist/wikimasters-plus-1.8.0.zip` (Chrome) et `dist/wikimasters-plus-firefox-1.8.0.zip` (Firefox). Clique sur **Publish release**.
+   Les zips ne se mettent pas dans le code du dépôt (le dossier `dist/` est ignoré), uniquement dans les releases.
 
 ---
 
@@ -82,3 +83,27 @@ Tous les textes sont prêts dans `store/fiche-chrome-web-store.md` :
 - **Captures d'écran** : elles viennent d'une maquette neutre avec des illustrations originales, pas du vrai site. Tu peux les remplacer par de vraies captures de ton écran si tu préfères.
 - **Pas d'automatisation** : l'extension ne fait aucune ouverture de paquet automatique. Ne jamais en ajouter, c'est contraire aux règles du site et au store.
 - **Confidentialité** : si tu ajoutes un jour une fonctionnalité qui envoie des données hors du navigateur, mets à jour `PRIVACY.md` et l'onglet « Pratiques de confidentialité ».
+
+---
+
+## Partie 3 : Firefox (addons.mozilla.org)
+
+Le code est le même que pour Chrome. Seul le manifest change : il est dans `firefox/manifest.json` (script de fond déclaré en `background.scripts`, identifiant `wikimasters-plus@pommespanzer`, Firefox 128 minimum, déclaration « aucune donnée collectée »).
+
+### Tester en local
+1. `./scripts/package-firefox.sh` crée le dossier `dist/firefox` et le zip `dist/wikimasters-plus-firefox-1.8.0.zip`.
+2. Dans Firefox : `about:debugging` → **Ce Firefox** → **Charger un module complémentaire temporaire** → choisis `dist/firefox/manifest.json` (ou directement le zip).
+3. Firefox demande l'accès à wiki-masters.com : si ce n'est pas le cas, va dans `about:addons` → WikiMasters+ → **Permissions** et active l'accès au site.
+4. Le module reste chargé jusqu'à la fermeture de Firefox.
+
+### Publier
+1. Crée un compte sur https://addons.mozilla.org/developers/ (gratuit).
+2. **Soumettre un nouveau module** → **Sur ce site** (listé publiquement).
+3. Envoie `dist/wikimasters-plus-firefox-1.8.0.zip`.
+4. Quand AMO demande le **code source** : le code n'est ni minifié ni généré (la seule bibliothèque, `lib/html-to-image.js`, est la version officielle publiée sur npm, version 1.11.13). Réponds « Non ».
+5. Reprends les textes de `store/fiche-chrome-web-store.md` (résumé, description, catégorie « Jeux » ou « Divertissement »), les captures d'écran et le lien vers `PRIVACY.md`.
+6. Licence : MIT.
+
+### À savoir
+- L'outil de vérification de Mozilla (`npx web-ext lint -s dist/firefox`) ne remonte **aucune erreur**, seulement des avertissements `innerHTML`. Toutes les valeurs insérées sont échappées, tu peux le préciser dans les notes pour les examinateurs.
+- Pour une mise à jour : augmente `version` dans **les deux** manifests (`extension/manifest.json` et `firefox/manifest.json`), puis relance les deux scripts.
