@@ -1,7 +1,7 @@
 # Guide de publication
 
 Ce guide explique comment mettre le projet sur GitHub puis publier l'extension sur le Chrome Web Store.
-Remplace `TimRuskof` par ton nom d'utilisateur GitHub s'il est différent (dans ce fichier, `README.md`, `store/fiche-chrome-web-store.md` et `extension/manifest.json` → `homepage_url`).
+Le compte GitHub utilisé dans les liens est `Pommespanzer`.
 
 ---
 
@@ -22,7 +22,7 @@ git init
 git add .
 git commit -m "WikiMasters+ 1.8.0"
 git branch -M main
-git remote add origin https://github.com/TimRuskof/wikimasters-plus.git
+git remote add origin https://github.com/Pommespanzer/wikimasters-plus.git
 git push -u origin main
 ```
 
