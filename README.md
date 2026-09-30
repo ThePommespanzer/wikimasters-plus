@@ -4,6 +4,8 @@ Extension **non officielle** pour Chrome et Firefox qui améliore l'expérience 
 
 > WikiMasters+ n'est ni affiliée ni approuvée par WikiMasters. Elle n'automatise pas l'ouverture des paquets et ne contourne aucune protection du site.
 
+![Aperçu](store/images/capture-1-ouverture.png)
+
 ## Fonctionnalités
 
 ### Ouverture des paquets
@@ -41,7 +43,7 @@ Chaque fonctionnalité peut être désactivée dans l'onglet **Réglages** du po
 | Navigateur | Version minimale | Installation |
 |---|---|---|
 | Chrome, Edge, Brave, Opera | Chrome 116 | Chrome Web Store *(lien à ajouter après publication)* |
-| Firefox | Firefox 128 | WIP |
+| Firefox | Firefox 128 | addons.mozilla.org *(lien à ajouter après publication)* |
 
 ### Installation manuelle depuis les Releases
 

@@ -1,7 +1,7 @@
 # Guide de publication
 
 Ce guide explique comment mettre le projet sur GitHub puis publier l'extension sur le Chrome Web Store.
-Le compte GitHub utilisé dans les liens est `Pommespanzer`.
+Le compte GitHub utilisé dans les liens est `ThePommespanzer`.
 
 ---
 
@@ -22,7 +22,7 @@ git init
 git add .
 git commit -m "WikiMasters+ 1.8.0"
 git branch -M main
-git remote add origin https://github.com/Pommespanzer/wikimasters-plus.git
+git remote add origin https://github.com/ThePommespanzer/wikimasters-plus.git
 git push -u origin main
 ```
 
