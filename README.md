@@ -47,8 +47,8 @@ Chaque fonctionnalité se règle dans l'onglet **WikiMasters+** ajouté au menu 
 
 | Navigateur | Version minimale | Installation |
 |---|---|---|
-| Chrome, Edge, Brave, Opera | Chrome 116 | Chrome Web Store *(lien à ajouter après publication)* |
-| Firefox (ordinateur et Android) | Firefox 128 | addons.mozilla.org *(lien à ajouter après publication)* |
+| Chrome, Edge, Brave, Opera | Chrome 116 | En cours d'upload |
+| Firefox (ordinateur et Android) | Firefox 128 | Uniquement manuel |
 
 ### Installation manuelle depuis les Releases
 
@@ -77,32 +77,6 @@ Clone le dépôt, puis :
 ## Confidentialité
 
 Tout reste dans ton navigateur. L'extension n'envoie aucune donnée à son auteur ni à un serveur tiers. Détails dans [PRIVACY.md](PRIVACY.md).
-
-## Développement
-
-```
-extension/        code de l'extension (Manifest V3, sans étape de build)
-firefox/          manifest Firefox (même code)
-  manifest.json
-  background.js   service worker : alarmes, notifications, badge, historique
-  inject.js       observation des réponses d'ouverture + cache local (contexte de la page)
-  content.js      effets de révélé, compteur, raccourcis
-  stage.js        interface d'ouverture et de révélé
-  panel.js        panneau de statistiques sur la page
-  tags.js         barre de tags pendant le révélé
-  cards.js        outils sur les cartes, images libres, échanges, vue compacte
-  popup.*         popup (stats, historique, réglages)
-  lib/            html-to-image (MIT)
-store/            textes et visuels du Chrome Web Store
-scripts/          outils (création du zip)
-```
-
-Créer les zips :
-
-```bash
-./scripts/package.sh          # Chrome Web Store
-./scripts/package-firefox.sh  # Firefox (addons.mozilla.org)
-```
 
 ## Crédits
 
