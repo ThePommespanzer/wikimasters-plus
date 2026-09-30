@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "WikiMasters+",
-  "version": "1.8.0",
+  "version": "1.9.0",
   "description": "Extension non officielle pour WikiMasters : révélé animé, stats de tirages, tags rapides, outils de carte et cache.",
   "permissions": [
     "storage",
@@ -55,7 +55,8 @@
         "common.js",
         "content.js",
         "panel.js",
-        "stage.js"
+        "stage.js",
+        "settings.js"
       ],
       "run_at": "document_idle"
     },
@@ -93,6 +94,9 @@
           "none"
         ]
       }
+    },
+    "gecko_android": {
+      "strict_min_version": "128.0"
     }
   }
 }

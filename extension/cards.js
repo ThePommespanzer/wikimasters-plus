@@ -25,9 +25,10 @@
   // ------------------------------------------------------------------
   const css = document.createElement('style');
   css.textContent = `
-  .wmp-tools{position:absolute;left:6px;top:calc(45% - 30px);z-index:40;display:flex;gap:4px;opacity:0;transform:translateY(4px);
+  .wmp-tools{position:absolute;left:6px;top:34px;z-index:40;display:flex;gap:4px;opacity:0;transform:translateY(4px);
     transition:opacity .18s,transform .18s;pointer-events:none}
   .group:hover .wmp-tools,[class*="glow-"]:hover > .wmp-tools,.wmp-tools.wmp-always{opacity:1;transform:none;pointer-events:auto}
+  @media (hover:none){.wmp-tools{opacity:1;transform:none;pointer-events:auto}}
   .wmp-tools button,.wmp-tools a{all:unset;box-sizing:border-box;width:24px;height:24px;border-radius:7px;display:grid;place-items:center;cursor:pointer;
     background:rgba(12,13,12,.72);backdrop-filter:blur(6px);border:.8px solid rgba(255,255,255,.18);color:#f2f4f3;
     box-shadow:0 2px 8px rgba(0,0,0,.35);transition:transform .12s,background .12s}

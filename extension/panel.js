@@ -131,8 +131,9 @@
 
     const today = new Date(); today.setHours(0, 0, 0, 0);
     const todayPulls = opens.filter((x) => x.t >= today.getTime());
-    const todayCards = todayPulls.flatMap((x) => x.cards);
-    const todayBest = [...todayCards].sort((a, b) => ((WM.RANK[a.r] ?? 9) - (WM.RANK[b.r] ?? 9)) || (b.s - a.s))[0];
+    const todayCards = todayPulls.flatMap((x) => x.cards.map((c) => ({ ...c, t: x.t })));
+    // meilleure rareté, puis shiny, puis la plus récente en cas d'égalité
+    const todayBest = [...todayCards].sort((a, b) => ((WM.RANK[a.r] ?? 9) - (WM.RANK[b.r] ?? 9)) || (b.s - a.s) || (b.t - a.t))[0];
     const todayNew = todayCards.filter((c) => c.o === 1).length;
     const todayShiny = todayCards.filter((c) => c.s).length;
     const todayMix = WM.RARITIES.slice().reverse().map((r) => {

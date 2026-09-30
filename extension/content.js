@@ -59,7 +59,7 @@
     .banner small::before,.banner small::after{content:"";width:34px;height:1px;background:linear-gradient(90deg,transparent,var(--c))}
     .banner small::after{transform:scaleX(-1)}
     @keyframes ospin{from{transform:rotate(-180deg) scale(0)}60%{transform:rotate(20deg) scale(1.3)}to{transform:rotate(0) scale(1)}}
-    .badge{position:absolute;transform:translate(-50%,-50%) rotate(8deg) scale(0);padding:6px 13px 5px;border-radius:999px;overflow:hidden;
+    .badge{position:absolute;transform:translate(-50%,-50%) scale(0);padding:6px 13px 5px;border-radius:999px;overflow:hidden;
       font:900 12px/1 var(--font-heading,system-ui),system-ui,-apple-system,"Segoe UI",sans-serif;letter-spacing:.12em;color:#06140e;
       background:linear-gradient(135deg,#ffffff 0%,#c9fbe6 40%,#34d399 100%);
       box-shadow:0 0 0 2px #0c0d0c,0 0 0 3px rgba(52,211,153,.6),0 8px 22px rgba(52,211,153,.45)}
@@ -256,13 +256,14 @@
   }
   function newBadge(rect) {
     const b = $('.badge');
-    const x = rect.right - 18, y = rect.top + 8;
+    // en haut au centre de la carte : ne cache ni la rareté (à gauche) ni le favori (à droite)
+    const x = rect.left + rect.width / 2, y = rect.top + 2;
     b.style.left = x + 'px'; b.style.top = y + 'px';
     run(b, [
-      { transform: 'translate(-50%,-50%) rotate(-35deg) scale(0)' },
-      { transform: 'translate(-50%,-50%) rotate(14deg) scale(1.3)', offset: .55 },
-      { transform: 'translate(-50%,-50%) rotate(5deg) scale(.95)', offset: .8 },
-      { transform: 'translate(-50%,-50%) rotate(8deg) scale(1)' }
+      { transform: 'translate(-50%,-50%) rotate(-20deg) scale(0)' },
+      { transform: 'translate(-50%,-50%) rotate(4deg) scale(1.3)', offset: .55 },
+      { transform: 'translate(-50%,-50%) rotate(-2deg) scale(.95)', offset: .8 },
+      { transform: 'translate(-50%,-50%) rotate(0deg) scale(1)' }
     ], { duration: 520, easing: 'cubic-bezier(.2,.9,.3,1.3)', fill: 'forwards' });
     later(220, () => { sparks(x, y, '#34d399', 16, 5, { size: 2.6, up: 1 }); tone(1320, 0, .12, 'triangle', .05); tone(1760, .07, .16, 'triangle', .05); });
   }
@@ -651,6 +652,7 @@
   // =====================================================================
   document.addEventListener('keydown', (e) => {
     if (!settings.spaceKey || e.code !== 'Space' || e.repeat || e.ctrlKey || e.metaKey || e.altKey) return;
+    const sp = document.getElementById('wmp-settings'); if (sp && sp.style.display !== 'none') return;
     if (!location.pathname.startsWith('/pulls')) return;
     const a = document.activeElement;
     if (a && (a.isContentEditable || /^(INPUT|TEXTAREA|SELECT)$/.test(a.tagName))) return;

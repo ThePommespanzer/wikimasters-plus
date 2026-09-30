@@ -71,7 +71,18 @@
   const cacheKey = (me) => 'wmp_tags_' + me;
   function readCache(me) { try { const v = JSON.parse(localStorage.getItem(cacheKey(me)) || 'null'); return Array.isArray(v) ? v : null; } catch (_) { return null; } }
   function writeCache(me) { try { localStorage.setItem(cacheKey(me), JSON.stringify(tags || [])); } catch (_) {} }
-  const sortTags = (list) => list.sort((a, b) => String(a.name).localeCompare(String(b.name), 'fr'));
+  // Ordre personnalisé des tags (réglable par glisser-déposer ici ou dans l'onglet WikiMasters+ du site)
+  const orderKey = (me) => 'wmp_tag_order_' + me;
+  function readOrder() { try { const v = JSON.parse(localStorage.getItem(orderKey(uid)) || '[]'); return Array.isArray(v) ? v.map(String) : []; } catch (_) { return []; } }
+  function saveOrder(ids) { try { localStorage.setItem(orderKey(uid), JSON.stringify(ids.map(String))); } catch (_) {} }
+  const sortTags = (list) => {
+    const ord = uid ? readOrder() : [];
+    const pos = (t) => { const i = ord.indexOf(String(t.id)); return i < 0 ? 1e6 : i; };
+    return list.sort((a, b) => (pos(a) - pos(b)) || String(a.name).localeCompare(String(b.name), 'fr'));
+  };
+  window.addEventListener('message', (e) => {
+    if (e.source === window && e.data && e.data.__wmPlusTagOrder && tags) { sortTags(tags); render(); }
+  });
   const tagIdsOf = (u) => new Set((u.user_card_tags || []).map((t) => t.tag_id ?? (t.tag && t.tag.id)).filter((x) => x != null));
 
   function pickCopies(cards, rows) {
@@ -91,7 +102,7 @@
     try {
       const me = await getUid(c); // lu localement, pas de requête réseau
       if (!me) throw new Error('session introuvable');
-      if (!tags) tags = readCache(me);
+      if (!tags) { tags = readCache(me); if (tags) sortTags(tags); }
 
       // Les exemplaires (et leurs tags) sont déjà fournis par le site avec le paquet : aucune requête
       const haveOwned = Array.isArray(owned) && owned.length && owned.every((u) => u && 'user_card_tags' in u);
@@ -154,7 +165,7 @@
   root.innerHTML = `
   <style>
     :host{all:initial}
-    .p{width:230px;max-height:min(460px,calc(100vh - 32px));display:flex;flex-direction:column;box-sizing:border-box;
+    .p{width:250px;max-height:min(460px,calc(100vh - 32px));display:flex;flex-direction:column;box-sizing:border-box;
       background:linear-gradient(180deg,rgba(30,35,33,.86),rgba(15,18,17,.9));border:.8px solid rgba(200,208,203,.14);border-radius:16px;
       box-shadow:0 14px 40px rgba(0,0,0,.45),inset 0 1px 0 rgba(255,255,255,.05);backdrop-filter:blur(10px);
       color:#f2f4f3;font:13px/1.35 var(--font-heading,system-ui),system-ui,-apple-system,"Segoe UI",sans-serif;
@@ -164,6 +175,9 @@
     .h b{font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:rgba(242,244,243,.6)}
     .h span{font-size:11px;color:rgba(242,244,243,.4);max-width:130px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
     .l{overflow:auto;padding:0 8px 6px;display:flex;flex-direction:column;gap:3px}
+    .t .g{color:rgba(242,244,243,.25);font-size:11px;letter-spacing:-2px;cursor:grab;margin-right:-2px}
+    .t:hover .g{color:rgba(242,244,243,.55)}
+    .t.drag{opacity:.45}
     .t{all:unset;box-sizing:border-box;display:flex;align-items:center;gap:8px;width:100%;padding:6px 8px;border-radius:9px;cursor:pointer;
       border:.8px solid transparent;transition:background .15s,border-color .15s,transform .1s}
     .t:hover{background:rgba(255,255,255,.05)}
@@ -197,7 +211,9 @@
   function flashError(t) { const m = $('.msg'); m.textContent = t; m.className = 'msg err'; clearTimeout(errTimer); errTimer = setTimeout(render, 2000); }
 
   let cur = null;
+  let dragging = null;
   function render(popId) {
+    if (dragging) return;
     if (!cur) return;
     $('.h span').textContent = cur.wikipedia_title || '';
     const list = $('.l'), msg = $('.msg');
@@ -209,10 +225,25 @@
     msg.textContent = tags && tags.length ? '' : 'Tu n’as pas encore de tags, crée le premier ci-dessous';
     list.innerHTML = (tags || []).map((t, i) => {
       const on = copy.tagIds.has(t.id);
-      return `<button class="t${on ? ' on' : ''}${popId === t.id ? ' pop' : ''}" data-id="${esc(t.id)}" style="--c:${hex(t.color)}">
-        <span class="c">✓</span><span class="d"></span><span class="n">${esc(t.name)}</span>${i < 9 ? `<span class="k">${i + 1}</span>` : ''}</button>`;
+      return `<button class="t${on ? ' on' : ''}${popId === t.id ? ' pop' : ''}" data-id="${esc(t.id)}" draggable="true" style="--c:${hex(t.color)}">
+        <span class="g" title="Glisser pour réordonner">⋮⋮</span><span class="c">✓</span><span class="d"></span><span class="n">${esc(t.name)}</span>${i < 9 ? `<span class="k">${i + 1}</span>` : ''}</button>`;
     }).join('');
-    list.querySelectorAll('.t').forEach((b) => b.onclick = () => { const t = tags.find((x) => String(x.id) === b.dataset.id); if (t) toggle(t); });
+    list.querySelectorAll('.t').forEach((b) => {
+      b.onclick = () => { if (dragging) return; const t = tags.find((x) => String(x.id) === b.dataset.id); if (t) toggle(t); };
+      b.addEventListener('dragstart', (e) => { dragging = b; b.classList.add('drag'); e.dataTransfer.effectAllowed = 'move'; try { e.dataTransfer.setData('text/plain', b.dataset.id); } catch (_) {} });
+      b.addEventListener('dragend', () => {
+        b.classList.remove('drag');
+        const ids = [...list.querySelectorAll('.t')].map((x) => x.dataset.id);
+        saveOrder(ids); sortTags(tags); writeCache(uid);
+        setTimeout(() => { dragging = null; render(); }, 0);
+      });
+      b.addEventListener('dragover', (e) => {
+        if (!dragging || dragging === b) return;
+        e.preventDefault();
+        const r = b.getBoundingClientRect();
+        list.insertBefore(dragging, e.clientY < r.top + r.height / 2 ? b : b.nextSibling);
+      });
+    });
   }
 
   function hide() { host.style.display = 'none'; cur = null; }
@@ -221,7 +252,7 @@
     const flip = document.querySelector('main [class*="animate-card-flip"]');
     if (!flip) return;
     const r = (flip.parentElement || flip).getBoundingClientRect();
-    const w = 230, gap = 48;
+    const w = 250, gap = 48;
     let left = r.right + gap;
     if (left + w > innerWidth - 12) left = Math.max(12, r.left - gap - w);
     host.style.left = left + 'px';
@@ -249,6 +280,7 @@
   // Raccourcis 1 à 9 pendant le révélé
   document.addEventListener('keydown', (e) => {
     if (!enabled || !cur || host.style.display === 'none' || e.ctrlKey || e.metaKey || e.altKey) return;
+    const sp = document.getElementById('wmp-settings'); if (sp && sp.style.display !== 'none') return;
     const a = document.activeElement;
     if (a && (a.isContentEditable || /^(INPUT|TEXTAREA|SELECT)$/.test(a.tagName))) return;
     const n = parseInt(e.key, 10);

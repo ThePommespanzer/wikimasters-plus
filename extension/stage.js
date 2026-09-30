@@ -189,11 +189,18 @@
     halo.style.top = (r.top - s.top + r.height / 2) + 'px';
   }
 
+  // n'écrit la classe que si elle manque (sinon l'observateur se relancerait en boucle)
+  const addCls = (el, c) => { if (!el.classList.contains(c)) el.classList.add(c); };
+
   function tick() {
     if (!settings.restyle || !location.pathname.startsWith('/pulls')) { if (stageEl) cleanup(); return; }
     const main = document.querySelector('main');
     const flip = main && main.querySelector('[class*="animate-card-flip"]');
-    const openBtn = main && [...main.querySelectorAll('button')].find((b) => b.querySelector('img') && /Ouvrir/.test(b.textContent));
+    // Le bouton du paquet : reconnu aussi pendant l'animation d'ouverture (« Ouverture... »)
+    const openBtn = main && [...main.querySelectorAll('button')].find((b) => {
+      const im = b.querySelector('img');
+      return im && (/card_pack|Ouvrir un paquet/i.test((im.getAttribute('src') || '') + ' ' + (im.alt || '')) || /Ouv(rir|erture)/.test(b.textContent));
+    });
     const mode = flip ? 'reveal' : openBtn ? 'idle' : null;
     const stage = mode === 'reveal' ? (main.firstElementChild || null) : openBtn ? openBtn.parentElement : null;
     if (!stage) { if (stageEl) cleanup(); return; }
@@ -202,9 +209,9 @@
 
     if (mode === 'idle') {
       setTint(null);
-      openBtn.classList.add('wmp-open-btn');
+      addCls(openBtn, 'wmp-open-btn');
       const frame = [...stage.querySelectorAll('.card-frame')].find((f) => /paquets? disponibles?/i.test(f.textContent));
-      if (frame) frame.classList.add('wmp-hidden');
+      if (frame) addCls(frame, 'wmp-hidden');
       if (hud.parentElement !== stage) stage.appendChild(hud);
       renderHud(frame ? parseFrame(frame) : null);
       const img = openBtn.querySelector('img');
@@ -223,9 +230,9 @@
       const col = flip.closest('.flex.flex-col');
       if (col) {
         const counter = [...col.children].find((c) => /^\s*Carte/.test(c.textContent));
-        if (counter) counter.classList.add('wmp-counter');
+        if (counter) addCls(counter, 'wmp-counter');
         const nav = [...col.children].find((c) => c.querySelector('button.w-12'));
-        if (nav) nav.classList.add('wmp-nav');
+        if (nav) addCls(nav, 'wmp-nav');
         if (settings.spaceKey && revealHint.parentElement !== col) col.appendChild(revealHint);
         if (!settings.spaceKey) revealHint.remove();
       }
@@ -244,5 +251,5 @@
     if (!settings.restyle || !location.pathname.startsWith('/pulls')) { if (stageEl) tick(); return; }
     if (muts.every((m) => ours(m.target))) return;
     tick();
-  }).observe(document.documentElement, { childList: true, subtree: true });
+  }).observe(document.documentElement, { childList: true, subtree: true, attributes: true, attributeFilter: ['class'] });
 })();

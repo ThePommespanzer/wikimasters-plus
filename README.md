@@ -36,14 +36,14 @@ Extension **non officielle** pour Chrome et Firefox qui améliore l'expérience 
 - Notification quand la réserve de paquets est pleine, rappel du pack PRO quotidien.
 - **Cache local** des données lentes (collection, tags, cartes, amis, profils) : affichage instantané puis mise à jour automatique. Bouton **« Tout mettre en cache »** sur la Collection pour la précharger entièrement. Jamais pour les échanges, le marché ou les paquets, et vidé à chaque modification.
 
-Chaque fonctionnalité peut être désactivée dans l'onglet **Réglages** du popup.
+Chaque fonctionnalité se règle dans l'onglet **WikiMasters+** ajouté au menu du site (ou dans le popup de l'extension). On y choisit aussi l'ordre des tags de la barre du révélé.
 
 ## Installation
 
 | Navigateur | Version minimale | Installation |
 |---|---|---|
-| Chrome, Edge, Brave, Opera | Chrome 116 | En attente de la validation Chrome |
-| Firefox | Firefox 128 | Uniquement manuel pour l'instant |
+| Chrome, Edge, Brave, Opera | Chrome 116 | Chrome Web Store *(lien à ajouter après publication)* |
+| Firefox (ordinateur et Android) | Firefox 128 | addons.mozilla.org *(lien à ajouter après publication)* |
 
 ### Installation manuelle depuis les Releases
 
@@ -76,20 +76,20 @@ Tout reste dans ton navigateur. L'extension n'envoie aucune donnée à son auteu
 ## Développement
 
 ```
-extension/        code de l'extension
-firefox/          manifest Firefox
+extension/        code de l'extension (Manifest V3, sans étape de build)
+firefox/          manifest Firefox (même code)
   manifest.json
   background.js   service worker : alarmes, notifications, badge, historique
-  inject.js       observation des réponses d'ouverture + cache local
+  inject.js       observation des réponses d'ouverture + cache local (contexte de la page)
   content.js      effets de révélé, compteur, raccourcis
   stage.js        interface d'ouverture et de révélé
   panel.js        panneau de statistiques sur la page
   tags.js         barre de tags pendant le révélé
   cards.js        outils sur les cartes, images libres, échanges, vue compacte
-  popup.*         popup
-  lib/            html-to-image
+  popup.*         popup (stats, historique, réglages)
+  lib/            html-to-image (MIT)
 store/            textes et visuels du Chrome Web Store
-scripts/          outils
+scripts/          outils (création du zip)
 ```
 
 Créer les zips :
