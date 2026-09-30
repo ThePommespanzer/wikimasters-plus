@@ -42,8 +42,8 @@ Chaque fonctionnalité se règle dans l'onglet **WikiMasters+** ajouté au menu 
 
 | Navigateur | Version minimale | Installation |
 |---|---|---|
-| Chrome, Edge, Brave, Opera | Chrome 116 | Chrome Web Store *(lien à ajouter après publication)* |
-| Firefox (ordinateur et Android) | Firefox 128 | addons.mozilla.org *(lien à ajouter après publication)* |
+| Chrome, Edge, Brave, Opera | Chrome 116 | En cours d'upload |
+| Firefox (ordinateur et Android) | Firefox 128 | Uniquement manuel |
 
 ### Installation manuelle depuis les Releases
 
