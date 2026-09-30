@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<title>WikiMasters+</title>
+<link rel="stylesheet" href="popup.css">
+</head>
+<body>
+  <header>
+    <img src="icons/32.png" alt="">
+    <h1>WikiMasters+</h1>
+    <nav>
+      <button data-tab="stats" class="on">Stats</button>
+      <button data-tab="history">Tirages</button>
+      <button data-tab="settings">Réglages</button>
+    </nav>
+  </header>
+
+  <section id="packs" class="card packs"></section>
+
+  <main>
+    <div data-panel="stats">
+      <div class="kpis" id="kpis"></div>
+      <div class="card">
+        <h2>Répartition par rareté</h2>
+        <div id="rarity"></div>
+        <p class="hint">Barre = ton taux réel. Trait = taux affiché par le site sur toute ta collection.</p>
+      </div>
+      <div class="card">
+        <h2>Séries en cours</h2>
+        <div id="streaks" class="streaks"></div>
+      </div>
+    </div>
+
+    <div data-panel="history" hidden>
+      <div class="card">
+        <h2>Meilleures cartes récentes</h2>
+        <ul id="best" class="list"></ul>
+      </div>
+      <div class="card">
+        <h2>10 derniers paquets</h2>
+        <ul id="recent" class="packsList"></ul>
+      </div>
+    </div>
+
+    <div data-panel="settings" hidden>
+      <div class="card settings">
+        <h2>Ouverture</h2>
+        <label><input type="checkbox" data-k="effects"> Effets visuels selon la rareté</label>
+        <label><input type="checkbox" data-k="sound"> Jingle sonore</label>
+        <label><input type="checkbox" data-k="summary"> Récap du paquet</label>
+        <label><input type="checkbox" data-k="restyle"> Nouvelle interface d'ouverture</label>
+        <label><input type="checkbox" data-k="tagBar"> Barre de tags pendant le révélé</label>
+        <label><input type="checkbox" data-k="pagePanel"> Panneau d'infos sur la page</label>
+        <label><input type="checkbox" data-k="spaceKey"> Touche Espace pour ouvrir un paquet</label>
+        <h2>Onglet et alertes</h2>
+        <label><input type="checkbox" data-k="tabTitle"> Compteur dans le titre de l'onglet</label>
+        <label><input type="checkbox" data-k="notifyFull"> Notifier à <input type="number" min="1" max="10" data-k="threshold" class="num"> paquets</label>
+        <label><input type="checkbox" data-k="proReminder"> Rappel pack PRO à <input type="number" min="0" max="23" data-k="proHour" class="num"> h</label>
+        <label class="sel">Régénération
+          <select data-k="regenMode">
+            <option value="auto">Auto</option>
+            <option value="normal">Normal (10 min)</option>
+            <option value="pro">PRO (3 min)</option>
+          </select>
+        </label>
+        <h2>Cartes</h2>
+        <label><input type="checkbox" data-k="cardTools"> Boutons Wikipédia, Letterboxd, plein écran, copie</label>
+        <label><input type="checkbox" data-k="freeImages"> Image libre pour les cartes sans image</label>
+        <label><input type="checkbox" data-k="tradeCards"> Cartes visibles dans les échanges</label>
+        <label><input type="checkbox" data-k="compactToggle"> Bouton vue compacte</label>
+        <h2>Cache</h2>
+        <label><input type="checkbox" data-k="cache"> Cache local (collection, tags, cartes, amis, profils)</label>
+        <p class="hint" id="cacheInfo">Réponse instantanée depuis le cache, mise à jour en arrière-plan et rechargement automatique si quelque chose a changé. Jamais pour les échanges, le marché ou les paquets, et vidé à chaque modification.</p>
+        <div class="btns" style="margin-top:8px"><button id="clearCache">Vider le cache</button></div>
+        <h2>Données</h2>
+        <div class="btns">
+          <button id="export">Exporter CSV</button>
+          <button id="reset" class="danger">Réinitialiser les stats</button>
+        </div>
+      </div>
+    </div>
+  </main>
+  <script src="common.js"></script>
+  <script src="popup.js"></script>
+</body>
+</html>
