@@ -1,5 +1,9 @@
 # Journal des versions
 
+## 1.11
+- Le fond coloré de l'ouverture et du révélé couvre toute la page, plus de bande grise en bas.
+- Révélé agrandi : sur grand écran, la carte, le compteur, les flèches et le bouton s'agrandissent pour occuper toute la hauteur de la fenêtre, avec la pastille « Nouvelle » et la barre de tags à la même échelle (désactivable dans les réglages).
+
 ## 1.10
 **Collection**
 - Défilement continu : un interrupteur sur la Collection ajoute les pages suivantes en bas pendant que tu scrolles, sans cliquer sur « Suivant ». Filtres, tri, recherche et fiche de carte du site inchangés, et tu restes à ta place même si le site recharge sa liste.

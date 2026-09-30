@@ -12,6 +12,7 @@ const WM = {
     summary: true,        // récap du paquet en bas à droite
     pagePanel: true,      // panneau d'infos intégré à la page /pulls
     restyle: true,        // nouvelle interface d'ouverture et de révélé
+    bigReveal: true,      // carte et commandes agrandies pendant le révélé (grands écrans)
     tagBar: true,         // barre de tags rapide pendant le révélé
     cache: true,          // cache local des données lentes (collection, tags, amis)
     fastReveal: false,    // révélé rapide pour C, PC et R

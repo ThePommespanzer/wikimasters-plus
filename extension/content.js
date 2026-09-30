@@ -258,7 +258,10 @@
     const b = $('.badge');
     // en haut au centre de la carte : ne cache ni la rareté (à gauche) ni le favori (à droite)
     const x = rect.left + rect.width / 2, y = rect.top + 2;
-    b.style.left = x + 'px'; b.style.top = y + 'px';
+    // pastille agrandie comme la carte (révélé agrandi) ; left/top sont eux aussi multipliés par le zoom
+    const z = Math.min(1.7, parseFloat(document.documentElement.dataset.wmpZoom) || 1);
+    b.style.zoom = z === 1 ? '' : String(z);
+    b.style.left = (x / z) + 'px'; b.style.top = (y / z) + 'px';
     run(b, [
       { transform: 'translate(-50%,-50%) rotate(-20deg) scale(0)' },
       { transform: 'translate(-50%,-50%) rotate(4deg) scale(1.3)', offset: .55 },

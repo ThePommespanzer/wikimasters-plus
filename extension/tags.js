@@ -252,11 +252,18 @@
     const flip = document.querySelector('main [class*="animate-card-flip"]');
     if (!flip) return;
     const r = (flip.parentElement || flip).getBoundingClientRect();
-    const w = 250, gap = 48;
+    // même agrandissement que la carte (révélé agrandi) ; left/top sont eux aussi multipliés par le zoom
+    const zr = parseFloat(document.documentElement.dataset.wmpZoom) || 1;
+    const room = (innerWidth - 12 - r.right) / 298; // place à droite de la carte, en « barres » de 250 px + marge
+    const z = Math.max(1, Math.min(1.5, zr, room));
+    const zs = z === 1 ? '' : String(z);
+    if (host.style.zoom !== zs) host.style.zoom = zs;
+    const w = 250 * z, gap = 48 * z;
     let left = r.right + gap;
     if (left + w > innerWidth - 12) left = Math.max(12, r.left - gap - w);
-    host.style.left = left + 'px';
-    host.style.top = Math.max(16, Math.min(r.top, innerHeight - 16 - host.getBoundingClientRect().height)) + 'px';
+    const top = Math.max(16, Math.min(r.top, innerHeight - 16 - host.getBoundingClientRect().height));
+    host.style.left = (left / z) + 'px';
+    host.style.top = (top / z) + 'px';
   }
 
   // Boucle légère : suit la carte affichée

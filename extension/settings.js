@@ -35,6 +35,7 @@
   const SECTIONS = [
     ['Ouverture des paquets', [
       ['restyle', 'Nouvelle interface d’ouverture et de révélé'],
+      ['bigReveal', 'Révélé agrandi sur grand écran (carte et commandes à la taille de la fenêtre)'],
       ['fastReveal', 'Révélé rapide (animations éclair pour C, PC et R)'],
       ['effects', 'Effets visuels selon la rareté'],
       ['sound', 'Jingle sonore'],

@@ -148,7 +148,42 @@
 
   let stageEl = null;
 
+  // Le fond couvre toute la zone de la page (pas seulement le bloc du paquet ou des cartes)
+  function fitBg(main) {
+    const r = main.getBoundingClientRect();
+    const top = Math.max(0, r.top), h = Math.min(innerHeight, r.bottom) - top;
+    const want = { position: 'fixed', left: r.left + 'px', top: top + 'px', width: r.width + 'px', height: h + 'px', right: 'auto', bottom: 'auto' };
+    for (const k in want) if (bg.style[k] !== want[k]) bg.style[k] = want[k];
+    // si un parent transformé décale la position « fixe », on corrige l'écart
+    const b = bg.getBoundingClientRect();
+    const dx = r.left - b.left, dy = top - b.top;
+    if (Math.abs(dx) > 1 || Math.abs(dy) > 1) { bg.style.left = (parseFloat(bg.style.left) + dx) + 'px'; bg.style.top = (parseFloat(bg.style.top) + dy) + 'px'; }
+  }
+  // Révélé agrandi : la carte et ses commandes prennent toute la hauteur disponible
+  let zoomed = null;
+  function scaleReveal(col, main, stage) {
+    if (settings.bigReveal === false) { unscale(); delete document.documentElement.dataset.wmpZoom; return; }
+    const cur = parseFloat(col.style.zoom) || 1;
+    const r = col.getBoundingClientRect();
+    const w = r.width / cur, h = r.height / cur;
+    if (!w || !h) return;
+    const reserve = settings.tagBar ? 620 : 80; // place pour la barre de tags à droite (et l'équilibre à gauche)
+    const z = Math.max(1, Math.min(1.7, (main.clientHeight - 48) / h, (main.clientWidth - reserve) / w));
+    if (Math.abs(z - cur) > 0.03) col.style.zoom = z.toFixed(3);
+    const zz = (parseFloat(col.style.zoom) || 1).toFixed(3);
+    if (document.documentElement.dataset.wmpZoom !== zz) document.documentElement.dataset.wmpZoom = zz; // partagé avec la barre de tags et « Nouvelle »
+    const mh = main.clientHeight + 'px';
+    if (stage.style.minHeight !== mh) stage.style.minHeight = mh;
+    zoomed = { col, stage };
+  }
+  function unscale() {
+    if (!zoomed) return;
+    zoomed.col.style.zoom = ''; zoomed.stage.style.minHeight = '';
+    delete document.documentElement.dataset.wmpZoom;
+    zoomed = null;
+  }
   function cleanup() {
+    unscale();
     [bg, hud, revealHint, sheen].forEach((n) => n.remove());
     document.querySelectorAll('[data-wmp-stage]').forEach((e) => e.removeAttribute('data-wmp-stage'));
     document.querySelectorAll('.wmp-hidden,.wmp-open-btn,.wmp-counter,.wmp-nav').forEach((e) => e.classList.remove('wmp-hidden', 'wmp-open-btn', 'wmp-counter', 'wmp-nav'));
@@ -224,6 +259,7 @@
     if (!stage) { if (stageEl) cleanup(); return; }
     if (stage !== stageEl || stage.getAttribute('data-wmp-stage') !== mode) { cleanup(); stageEl = stage; stage.setAttribute('data-wmp-stage', mode); }
     if (bg.parentElement !== stage) stage.appendChild(bg);
+    fitBg(main);
 
     if (mode === 'idle') {
       setTint(null);
@@ -254,6 +290,7 @@
         if (settings.spaceKey && revealHint.parentElement !== col) col.appendChild(revealHint);
         if (!settings.spaceKey) revealHint.remove();
       }
+      if (col) scaleReveal(col, main, stage);
       const card = flip.querySelector('[class*="glow-"]');
       const m = card && String(card.className).match(/\bglow-(c|pc|r|sr|ur|l|shiny)\b/);
       setTint(m ? (m[1] === 'shiny' ? 'L' : m[1].toUpperCase()) : null);
