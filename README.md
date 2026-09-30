@@ -42,7 +42,7 @@ Chaque fonctionnalité peut être désactivée dans l'onglet **Réglages** du po
 
 | Navigateur | Version minimale | Installation |
 |---|---|---|
-| Chrome, Edge, Brave, Opera | Chrome 116 | Chrome Web Store *(lien à ajouter après publication)* |
+| Chrome, Edge, Brave, Opera | Chrome 116 | En attente de la validation Chrome |
 | Firefox | Firefox 128 | Uniquement manuel pour l'instant |
 
 ### Installation manuelle depuis les Releases
