@@ -4,8 +4,6 @@ Extension Chrome **non officielle** qui améliore l'expérience sur [wiki-master
 
 > WikiMasters+ n'est ni affiliée ni approuvée par WikiMasters. Elle n'automatise pas l'ouverture des paquets et ne contourne aucune protection du site.
 
-![Aperçu](store/images/capture-1-ouverture.png)
-
 ## Fonctionnalités
 
 ### Ouverture des paquets
