@@ -35,6 +35,7 @@
   const SECTIONS = [
     ['Ouverture des paquets', [
       ['restyle', 'Nouvelle interface d’ouverture et de révélé'],
+      ['fastReveal', 'Révélé rapide (animations éclair pour C, PC et R)'],
       ['effects', 'Effets visuels selon la rareté'],
       ['sound', 'Jingle sonore'],
       ['summary', 'Récap du paquet à la fin du révélé'],
@@ -44,7 +45,11 @@
       ['cardTools', 'Boutons Wikipédia, Letterboxd, plein écran et copie'],
       ['freeImages', 'Image libre pour les cartes sans image'],
       ['tradeCards', 'Cartes visibles dans les échanges'],
-      ['compactToggle', 'Bouton vue compacte (Collection, Toutes les cartes)']
+      ['compactToggle', 'Défilement continu sur la Collection, vue compacte sur Toutes les cartes'],
+      ['collPrices', 'Prix estimés affichés sur la Collection'],
+      ['dupBadges', 'Badges de doublons et cartes déjà possédées'],
+      ['wishHighlight', 'Mettre en avant ta liste de souhaits (marché, échanges)'],
+      ['tradeCompare', 'Comparateur d’échange avec prix du marché']
     ]],
     ['Page et onglet', [
       ['pagePanel', 'Panneau de statistiques sur la page des paquets'],

@@ -14,10 +14,15 @@ const WM = {
     restyle: true,        // nouvelle interface d'ouverture et de révélé
     tagBar: true,         // barre de tags rapide pendant le révélé
     cache: true,          // cache local des données lentes (collection, tags, amis)
+    fastReveal: false,    // révélé rapide pour C, PC et R
+    dupBadges: true,      // badges de doublons / cartes possédées
+    wishHighlight: true,  // liste de souhaits mise en avant (marché, échanges)
+    tradeCompare: true,   // comparateur d'échange
     cardTools: true,      // boutons Wikipédia, Letterboxd, plein écran, copie
     freeImages: true,     // image libre Wikipédia pour les cartes sans image
     tradeCards: true,     // cartes visibles sur la page des échanges
-    compactToggle: true,  // bouton vue compacte (Collection, Toutes les cartes)
+    compactToggle: true,  // défilement continu (Collection) et vue compacte (Toutes les cartes)
+    collPrices: true,     // prix estimés affichés sur la Collection
     tabTitle: true,       // (8/10) dans le titre de l'onglet
     spaceKey: true,       // Espace = ouvrir UN paquet
     notifyFull: true,     // notification quand le seuil est atteint

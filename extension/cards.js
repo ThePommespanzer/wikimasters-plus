@@ -25,24 +25,26 @@
   // ------------------------------------------------------------------
   const css = document.createElement('style');
   css.textContent = `
-  .wmp-tools{position:absolute;left:6px;top:34px;z-index:40;display:flex;gap:4px;opacity:0;transform:translateY(4px);
+  .wmp-tools{position:absolute;right:6px;top:calc(45% - 28px);z-index:40;display:flex;gap:4px;opacity:0;transform:translateY(4px);
     transition:opacity .18s,transform .18s;pointer-events:none}
   .group:hover .wmp-tools,[class*="glow-"]:hover > .wmp-tools,.wmp-tools.wmp-always{opacity:1;transform:none;pointer-events:auto}
   @media (hover:none){.wmp-tools{opacity:1;transform:none;pointer-events:auto}}
-  .wmp-tools button,.wmp-tools a{all:unset;box-sizing:border-box;width:24px;height:24px;border-radius:7px;display:grid;place-items:center;cursor:pointer;
+  .wmp-tools button,.wmp-tools a{all:unset;box-sizing:border-box;width:22px;height:22px;border-radius:7px;display:grid;place-items:center;cursor:pointer;
     background:rgba(12,13,12,.72);backdrop-filter:blur(6px);border:.8px solid rgba(255,255,255,.18);color:#f2f4f3;
     box-shadow:0 2px 8px rgba(0,0,0,.35);transition:transform .12s,background .12s}
   .wmp-tools button:hover,.wmp-tools a:hover{transform:translateY(-1px) scale(1.08);background:rgba(30,34,32,.9)}
-  .wmp-tools svg{width:13px;height:13px}
+  .wmp-tools svg{width:12px;height:12px}
   .wmp-tools .wmp-w{font:700 12px/1 Georgia,"Times New Roman",serif}
   .wmp-tools .wmp-ok{background:#16a34a!important;border-color:transparent}
   .wmp-freeimg{position:absolute;inset:0;z-index:5;overflow:hidden;background:#111}
   .wmp-freeimg img{width:100%;height:100%;object-fit:cover;display:block}
   .wmp-freeimg.wmp-logo{background:radial-gradient(circle at 50% 45%,#ffffff,#dfe4e1 80%)}
   .wmp-freeimg.wmp-logo img{object-fit:contain;padding:10% 12% 16%;box-sizing:border-box;}
-  .wmp-credit{position:absolute;left:0;right:0;bottom:0;padding:10px 6px 3px;font:500 8px/1.2 system-ui,sans-serif;color:rgba(255,255,255,.85);
+  .wmp-credit{position:absolute;left:0;right:0;bottom:0;box-sizing:border-box;padding:10px 6px 3px;font:500 8px/1.2 system-ui,sans-serif;color:rgba(255,255,255,.85);
     background:linear-gradient(transparent,rgba(0,0,0,.7));white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-decoration:none;cursor:pointer}
   .wmp-credit:hover{color:#fff;text-decoration:underline}
+  .group:hover .wmp-credit,[class*="glow-"]:hover .wmp-credit{padding-right:110px}
+  @media (hover:none){.wmp-credit{padding-right:110px}}
   .wmp-trade-hidden{display:none!important}
   .wmp-trade-grid{display:flex;flex-wrap:wrap;gap:6px}
   .wmp-mini{position:relative;width:82px;height:114px;border-radius:9px;overflow:hidden;background:#1b1f1d;border:.8px solid rgba(255,255,255,.08);
@@ -494,7 +496,9 @@
   const compactPage = () => /^\/(collection|global-collection)(\/|$)/.test(location.pathname);
   const ckey = () => 'wmp_compact_' + location.pathname.split('/')[1];
   function compact() {
-    const on = S.compactToggle && compactPage();
+    const onList = S.compactToggle && /^\/collection(\/|$)/.test(location.pathname);
+    const on = S.compactToggle && compactPage() && !onList;
+    // Collection : la vue compacte est remplacée par le défilement continu (collection.js)
     if (!on) { cbtn && cbtn.remove(); document.documentElement.removeAttribute('data-wmp-compact'); }
     else {
       let state = false; try { state = localStorage.getItem(ckey()) === '1'; } catch (_) {}
@@ -539,38 +543,61 @@
     u.searchParams.set('sort', 'rarity'); u.searchParams.set('page', '0'); u.searchParams.set('stats', '0');
     return u;
   }
+  // Analyse complète de la collection (1 ou 2 requêtes), avec repli sur le parcours des pages
+  function analyze(onProgress) {
+    return new Promise((resolve) => {
+      const id = 'a' + Date.now();
+      const onMsg = (e) => {
+        if (e.source !== window || !e.data) return;
+        if (e.data.__wmPlusAnalyzeProgress === id) onProgress && onProgress(e.data);
+        if (e.data.__wmPlusAnalyzeDone === id) { removeEventListener('message', onMsg); resolve(e.data); }
+      };
+      addEventListener('message', onMsg);
+      window.postMessage({ __wmPlusAnalyze: id }, location.origin);
+      setTimeout(() => { removeEventListener('message', onMsg); resolve({ ok: false, error: 'timeout' }); }, 60000);
+    });
+  }
+  window.__wmpAnalyze = analyze;
+  window.__wmpMeta = (card, fn) => need(card, fn);
+  const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+  let stopCache = false;
   async function cacheAll() {
-    if (caching) return;
-    caching = true;
+    if (caching) { stopCache = true; return; } // deuxième clic : on arrête
+    caching = true; stopCache = false;
     const label = kbtn.querySelector('span');
     kbtn.classList.remove('done'); kbtn.classList.add('busy');
-    const tpl = collectionTemplate();
-    const url = (page, stats) => {
-      const u = new URL(tpl.href);
-      u.searchParams.set('page', String(page));
-      if (stats != null && u.searchParams.has('stats')) u.searchParams.set('stats', stats);
-      return u.pathname + u.search;
-    };
-    let cards = 0, page = 0, end = false, errors = 0;
+    let copies = 0, done = 0, pages = 0;
     try {
-      // statistiques et première page avec les deux variantes utilisées par le site
-      const sort = tpl.searchParams.get('sort') || 'rarity';
-      await Promise.all([
-        fetch(`/api/my-collection/stats?sort=${encodeURIComponent(sort)}`).catch(() => {}),
-        fetch(url(0, '1')).catch(() => {})
-      ]);
-      while (!end && page < 400) {
-        const batch = [page, page + 1, page + 2];
-        const res = await Promise.all(batch.map((p) => fetch(url(p, '0')).then((r) => r.ok ? r.json() : null).catch(() => null)));
-        for (const j of res) {
-          if (!j || !Array.isArray(j.collection)) { errors++; end = errors > 3 || end; continue; }
-          cards += j.collection.length;
-          if (j.collection.length < 50) end = true;
+      // 1) analyse complète et rapide (doublons, exemplaires)
+      label.textContent = 'Analyse de ta collection…';
+      const res = await analyze((p) => { label.textContent = p.b ? `Détails des doublons… ${p.a}/${p.b}` : `Lecture… ${p.n.toLocaleString('fr-FR')}${Number.isFinite(p.total) ? '/' + p.total.toLocaleString('fr-FR') : ''}`; });
+      if (res.ok) copies = res.copies;
+      // 2) toutes les pages, une à la fois (le site limite les requêtes rapprochées), avec les mêmes
+      //    filtres et le même tri que la page affichée : le défilement continu les retrouve instantanément.
+      const tpl = window.__wmpCollUrl ? new URL(window.__wmpCollUrl, location.origin) : collectionTemplate();
+      const stats0 = tpl.searchParams.get('stats');
+      const url = (page) => { const u = new URL(tpl.href); u.searchParams.set('page', String(page)); if (page > 0 || stats0 == null) u.searchParams.set('stats', page === 0 && stats0 != null ? stats0 : '0'); return u.pathname + u.search; };
+      const perPage = 50;
+      pages = res.ok ? Math.ceil(res.copies / perPage) : 1;
+      const t0 = Date.now(); let net = 0;
+      for (let page = 0; page < pages && !stopCache; page++) {
+        let j = null;
+        for (let tries = 0; tries < 4 && !j && !stopCache; tries++) {
+          const t1 = Date.now();
+          const r = await fetch(url(page), { __wmp: true }).catch(() => null);
+          if (r && r.ok) { j = await r.json().catch(() => null); if (!r.headers.get('x-wmplus-cache')) net++; }
+          else await sleep(1500 * (tries + 1)); // limite du site : on patiente puis on réessaie
+          if (Date.now() - t1 > 400) await sleep(150);
         }
-        page += 3;
-        label.textContent = `Mise en cache… ${cards} cartes`;
+        if (!j || !Array.isArray(j.collection)) break;
+        if (Number.isFinite(j.total)) pages = Math.ceil(j.total / perPage);
+        done = page + 1;
+        const per = net ? (Date.now() - t0) / Math.max(1, done) : 0;
+        const left = per ? Math.ceil(per * (pages - done) / 60000) : 0;
+        label.textContent = `Pages en cache ${done}/${pages}${left > 1 ? ` · ~${left} min` : ''} (clic = arrêter)`;
+        if (j.collection.length < perPage) break;
       }
-      label.textContent = `Collection en cache (${cards.toLocaleString('fr-FR')} cartes)`;
+      label.textContent = stopCache ? `Arrêté : ${done}/${pages} pages en cache` : `Collection en cache (${done} pages${copies ? ', ' + copies.toLocaleString('fr-FR') + ' cartes' : ''})`;
       kbtn.classList.add('done');
     } catch (e) {
       console.warn('[WikiMasters+] cache collection', e);
@@ -578,8 +605,10 @@
     }
     kbtn.classList.remove('busy');
     caching = false;
-    setTimeout(() => { if (!caching && kbtn) { kbtn.querySelector('span').textContent = 'Tout mettre en cache'; kbtn.classList.remove('done'); } }, 6000);
+    setTimeout(() => { if (!caching && kbtn) { kbtn.querySelector('span').textContent = 'Tout mettre en cache'; kbtn.classList.remove('done'); } }, 8000);
   }
+
+
 
   // ------------------------------------------------------------------
   //  Balayage

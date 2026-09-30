@@ -22,6 +22,7 @@ WikiMasters+ rend l'ouverture de paquets sur wiki-masters.com plus spectaculaire
 • Étiquette « Nouvelle » quand tu obtiens une carte pour la première fois.
 • Récap du paquet une fois toutes les cartes vues.
 • Touche Espace : ouvre un paquet puis passe à la carte suivante (un appui = une action).
+• Révélé rapide activable : animations éclair pour les cartes communes, grosse mise en scène pour SR, UR, L et shiny.
 
 ✦ TAGS EN UN CLIC
 • Une barre de tags s'affiche à côté de la carte pendant le révélé.
@@ -38,7 +39,8 @@ WikiMasters+ rend l'ouverture de paquets sur wiki-masters.com plus spectaculaire
 • Liens Wikipédia et Letterboxd (films, acteurs, réalisateurs).
 • Plein écran net avec inclinaison 3D, copie de la carte en image.
 • Image sous licence libre (Wikipédia, Wikidata, Commons) pour les cartes qui n'en ont pas, avec le crédit de l'auteur.
-• Cartes visibles directement sur la page des échanges.
+• Cartes visibles directement sur la page des échanges, avec un comparateur : raretés, ATK/DEF, valeur marché estimée d'après les ventes récentes, alerte si tu donnes ta dernière copie.
+• Doublons repérés d'un coup d'œil et liste de souhaits mise en avant sur le marché.
 • Vue compacte sur Collection et Toutes les cartes.
 
 ✦ CONFORT

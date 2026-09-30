@@ -18,8 +18,10 @@ Dans le stockage de l'extension (`chrome.storage.local`) :
 - tes réglages.
 
 Dans le stockage du site wiki-masters.com, dans ton navigateur (IndexedDB et localStorage) :
-- un cache temporaire des réponses lentes du site (collection, tags, cartes, amis, profils), pour afficher les pages plus vite. Il expire au bout de 30 minutes, est vidé à chaque modification et peut être vidé ou désactivé depuis les réglages ;
+- un cache temporaire des réponses lentes du site (collection, tags, cartes, amis, profils), pour afficher les pages plus vite. Il expire au bout de 30 minutes (12 heures pour la collection, les tags et les cartes), est vidé à chaque modification et peut être vidé ou désactivé depuis les réglages ;
 - ta liste de tags, pour afficher la barre de tags instantanément ;
+- la liste de tes cartes (titre, rareté, stats, date d'obtention) et leurs images, pour « Mes doublons » et le calcul des prix par rareté ;
+- les prix estimés de tes cartes (ventes récentes publiques du marché), gardés 7 jours ;
 - des informations publiques sur les cartes (identifiant Wikidata, image libre et son crédit, lien Letterboxd), gardées 7 jours ;
 - ton choix de vue compacte.
 
@@ -28,7 +30,7 @@ Tu peux tout effacer en désinstallant l'extension, avec le bouton « Réinitial
 ## Communications réseau
 
 L'extension ne contacte que :
-- **wiki-masters.com** et son service de données, uniquement avec ta session existante et seulement quand tu agis toi-même (par exemple poser un tag). Elle ne fait aucune requête automatique d'ouverture de paquets ;
+- **wiki-masters.com** et son service de données, uniquement avec ta session existante, déjà ouverte dans l'onglet. En plus de tes actions (poser un tag, analyser ta collection), elle fait quelques lectures discrètes pour fluidifier la navigation : les pages voisines de ta collection sont préchargées une par une, et l'analyse des doublons lit la liste de tes cartes. Les jetons de session du site ne sont ni enregistrés ni transmis ailleurs : ils restent en mémoire le temps de l'onglet. La seule action qu'elle peut faire en ton nom est la défausse d'exemplaires en double, et uniquement quand tu la demandes et la confirmes toi-même (une carte, ou tous tes doublons d'un coup, une défausse par seconde, arrêtable à tout moment). Elle garde toujours un exemplaire de chaque carte et ne défausse jamais tes shiny ni tes favoris. Elle n'ouvre jamais de paquets et ne fait jamais d'échange ni d'enchère ;
 - **Wikipédia, Wikidata et Wikimedia Commons**, pour récupérer des informations publiques sur les cartes (images libres, crédits, identifiants Letterboxd). Seul le titre de l'article est transmis.
 
 Les liens Wikipédia et Letterboxd ne s'ouvrent que si tu cliques dessus.

@@ -254,7 +254,7 @@
     h.classList.remove('go'); void h.offsetWidth; h.classList.add('go');
     later(1200, () => h.classList.remove('go'));
   }
-  function newBadge(rect) {
+  function newBadge(rect, silent) {
     const b = $('.badge');
     // en haut au centre de la carte : ne cache ni la rareté (à gauche) ni le favori (à droite)
     const x = rect.left + rect.width / 2, y = rect.top + 2;
@@ -265,7 +265,10 @@
       { transform: 'translate(-50%,-50%) rotate(-2deg) scale(.95)', offset: .8 },
       { transform: 'translate(-50%,-50%) rotate(0deg) scale(1)' }
     ], { duration: 520, easing: 'cubic-bezier(.2,.9,.3,1.3)', fill: 'forwards' });
-    later(220, () => { sparks(x, y, '#34d399', 16, 5, { size: 2.6, up: 1 }); tone(1320, 0, .12, 'triangle', .05); tone(1760, .07, .16, 'triangle', .05); });
+    later(220, () => {
+      if (silent) return; // révélé rapide : ni son ni étincelles pour les cartes courantes
+      sparks(x, y, '#34d399', 16, 5, { size: 2.6, up: 1 }); tone(1320, 0, .12, 'triangle', .05); tone(1760, .07, .16, 'triangle', .05);
+    });
   }
   function shake(power, dur = 450) {
     const main = document.querySelector('main');
@@ -352,6 +355,13 @@
 
     const rect = () => (r.wrap || el).getBoundingClientRect();
     const impact = (delay, fn) => later(delay, () => { if (cur.el === el) fn(rect()); });
+
+    // Révélé rapide : apparition éclair pour C, PC et R (hors shiny), grosse mise en scène gardée pour SR, UR, L
+    if (settings.fastReveal && tier <= 2 && !willShiny) {
+      run(el, [{ opacity: 0, transform: 'scale(.97)' }, { opacity: 1, transform: 'none' }], { duration: 150, easing: 'ease-out' });
+      if (fresh) later(80, () => { if (cur.el === el) newBadge(rect(), true); });
+      return;
+    }
 
     if (tier <= 1) {
       // Commune / Peu commune : retournement vif avec rebond
@@ -512,6 +522,7 @@
     if (a && (a.isContentEditable || /^(INPUT|TEXTAREA|SELECT)$/.test(a.tagName))) return true;
     if (document.querySelector('[role="dialog"],[aria-modal="true"],dialog[open]')) return true;
     if (revealActive || document.querySelector('main [class*="animate-card-flip"]')) return true;
+    if (document.documentElement.dataset.wmpInf) return true; // défilement continu en cours : on ne recharge pas
     return false;
   }
   let waited = 0;
@@ -521,22 +532,25 @@
     try { last = JSON.parse(sessionStorage.getItem('wmp_autoreload') || '{}'); } catch (_) {}
     const path = location.pathname + location.search;
     if (last[path] && Date.now() - last[path] < 60000) return;
+    if (document.documentElement.dataset.wmpInf) return; // les pages ajoutées seraient perdues
     if (busy()) { if (++waited < 30) freshTimer = setTimeout(tryReload, 1000); return; }
     waited = 0;
     last[path] = Date.now();
     try {
       sessionStorage.setItem('wmp_autoreload', JSON.stringify(last));
-      sessionStorage.setItem('wmp_scroll', JSON.stringify({ path, y: scrollY, t: Date.now() }));
+      sessionStorage.setItem('wmp_scroll', JSON.stringify({ path, y: scroller().scrollTop, t: Date.now() }));
     } catch (_) {}
     location.reload();
   }
+  // la page défile dans <main> (sinon dans la fenêtre)
+  function scroller() { const m = document.querySelector('main'); return m && m.scrollHeight > m.clientHeight ? m : document.scrollingElement; }
   // Après un rechargement automatique : on remet la page où elle était
   try {
     const sc = JSON.parse(sessionStorage.getItem('wmp_scroll') || 'null');
     sessionStorage.removeItem('wmp_scroll');
     if (sc && sc.path === location.pathname + location.search && Date.now() - sc.t < 15000 && sc.y > 0) {
       let n = 0;
-      const again = () => { window.scrollTo(0, sc.y); if (Math.abs(scrollY - sc.y) > 4 && ++n < 25) setTimeout(again, 120); };
+      const again = () => { const el = scroller(); el.scrollTop = sc.y; if (Math.abs(el.scrollTop - sc.y) > 4 && ++n < 25) setTimeout(again, 120); };
       again();
     }
   } catch (_) {}

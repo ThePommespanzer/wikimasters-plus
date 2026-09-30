@@ -102,6 +102,16 @@
     background:linear-gradient(0deg,color-mix(in srgb,var(--color-accent,#34d399) 65%,transparent),color-mix(in srgb,var(--color-accent,#34d399) 25%,transparent));transition:height 1s linear}
   .wmp-hud .meta{font-size:12px;color:rgba(242,244,243,.55);font-family:system-ui,sans-serif}
   .wmp-hud .meta b{color:#f2f4f3;font-weight:600;font-variant-numeric:tabular-nums}
+  .wmp-hud .wmp-fast{all:unset;cursor:pointer;display:inline-flex;align-items:center;gap:8px;padding:6px 10px 6px 12px;border-radius:999px;font:600 12px/1 system-ui,sans-serif;
+    color:rgba(242,244,243,.7);background:rgba(255,255,255,.05);border:.8px solid rgba(255,255,255,.12);transition:background .15s,color .15s}
+  .wmp-hud .wmp-fast:hover{background:rgba(255,255,255,.1)}
+  .wmp-hud .wmp-fast .ic{filter:grayscale(1);opacity:.6}
+  .wmp-hud .wmp-fast .sw{width:28px;height:16px;border-radius:99px;background:rgba(255,255,255,.15);position:relative;transition:background .15s}
+  .wmp-hud .wmp-fast .sw::after{content:"";position:absolute;top:2px;left:2px;width:12px;height:12px;border-radius:50%;background:#fff;transition:transform .15s}
+  .wmp-hud .wmp-fast.on{color:#fde68a;border-color:rgba(253,230,138,.4)}
+  .wmp-hud .wmp-fast.on .ic{filter:none;opacity:1}
+  .wmp-hud .wmp-fast.on .sw{background:#f59e0b}
+  .wmp-hud .wmp-fast.on .sw::after{transform:translateX(12px)}
   .wmp-hud .hint{font-size:11px;color:rgba(242,244,243,.42);font-family:system-ui,sans-serif;padding-top:9px;border-top:.8px solid rgba(200,208,203,.08);width:100%;text-align:center}
   .wmp-kbd{display:inline-block;padding:1px 8px;margin-right:5px;border-radius:6px;font:700 10px/1.6 ui-monospace,SFMono-Regular,monospace;color:#f2f4f3;letter-spacing:.04em;
     background:linear-gradient(#2e3432,#1b1f1e);border:.8px solid rgba(255,255,255,.18);box-shadow:0 2px 0 rgba(0,0,0,.55),inset 0 1px 0 rgba(255,255,255,.08)}
@@ -125,7 +135,14 @@
   const bg = mk('wmp-bg', '<div class="stars"></div><div class="stars2"></div><div class="blob b1"></div><div class="blob b2"></div><div class="blob b3"></div><div class="wmp-halo"></div><div class="grain"></div><div class="vignette"></div>');
   const halo = bg.querySelector('.wmp-halo');
   const hud = mk('wmp-hud', `<div class="cnt"><b>–</b><span>/ 10</span><em>paquets</em></div><div class="pips"></div>
-    <div class="meta"></div><div class="hint"><span class="wmp-kbd">Espace</span> pour ouvrir un paquet</div>`);
+    <div class="meta"></div><div class="hint"><span class="wmp-kbd">Espace</span> pour ouvrir un paquet</div>
+    <button class="wmp-fast" type="button" title="Animations éclair pour les cartes C, PC et R. Les SR, UR, L et shiny gardent leur mise en scène."><span class="ic">⚡</span>Révélé rapide<span class="sw"></span></button>`);
+  hud.querySelector('.wmp-fast').addEventListener('click', async (e) => {
+    e.preventDefault(); e.stopPropagation();
+    const { settings: cur } = await chrome.storage.local.get('settings');
+    const next = { ...WM.DEFAULTS, ...(cur || {}) }; next.fastReveal = !next.fastReveal;
+    await chrome.storage.local.set({ settings: next });
+  });
   const revealHint = mk('wmp-reveal-hint', '<span class="wmp-kbd">Espace</span> carte suivante');
   const sheen = mk('wmp-sheen-wrap');
 
@@ -179,6 +196,7 @@
     const metaEl = hud.querySelector('.meta');
     if (metaEl.innerHTML !== meta) metaEl.innerHTML = meta;
     hud.querySelector('.hint').style.display = settings.spaceKey ? '' : 'none';
+    hud.querySelector('.wmp-fast').classList.toggle('on', !!settings.fastReveal);
   }
 
   function placeHalo(target) {
