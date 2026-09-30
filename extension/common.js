@@ -73,6 +73,16 @@ const WM = {
     return Math.round(s / 86400) + ' j';
   },
 
+  // Une fenêtre du site (détail de carte, confirmation…) est-elle ouverte par-dessus la page ?
+  siteModalOpen() {
+    if (typeof document === 'undefined') return false;
+    for (const el of document.body ? document.body.children : []) {
+      const c = typeof el.className === 'string' ? el.className : '';
+      if (/\bfixed\b/.test(c) && /\binset-0\b/.test(c) && !/\bwmp-/.test(c) && el.getBoundingClientRect().width > 0) return true;
+    }
+    return !!document.querySelector('body > [role="dialog"], body > [aria-modal="true"]');
+  },
+
   today() { return new Date().toLocaleDateString('sv'); },
 
   cardName(c) { return c.wikipedia_title || c.name || c.title || c.wiki_title || c.page_title || ('#' + (c.id ?? '?')); },

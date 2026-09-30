@@ -271,7 +271,9 @@
     const counter = [...document.querySelectorAll('main span')].find((s) => s.previousElementSibling && s.previousElementSibling.textContent.trim() === 'Carte');
     const idx = counter ? parseInt(counter.textContent, 10) - 1 : 0;
     const card = cards[idx] || cards[0];
-    host.style.display = '';
+    // fenêtre du site ouverte par-dessus (détail de la carte) : on se cache
+    const modal = [...document.body.children].some((el) => { const c = typeof el.className === 'string' ? el.className : ''; return /\bfixed\b/.test(c) && /\binset-0\b/.test(c) && el.getBoundingClientRect().width > 0; });
+    host.style.display = modal ? 'none' : '';
     if (key !== packKey) { packKey = key; cur = card; loadPack(c, cards, ownedCopies); }
     else if (!cur || cur.id !== card.id) { cur = card; render(); }
     place();

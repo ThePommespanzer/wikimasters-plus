@@ -594,7 +594,9 @@
   }
 
   // Détection synchrone (avant l'affichage) des changements de carte
-  new MutationObserver(check).observe(document.documentElement, { childList: true, subtree: true, attributes: true, attributeFilter: ['class'] });
+  // Masque nos calques (étiquette, récap, particules) quand une fenêtre du site s'ouvre par-dessus
+  function modalGuard() { const v = WM.siteModalOpen() ? 'hidden' : ''; if (host.style.visibility !== v) host.style.visibility = v; }
+  new MutationObserver(() => { check(); modalGuard(); }).observe(document.documentElement, { childList: true, subtree: true, attributes: true, attributeFilter: ['class'] });
 
   // =====================================================================
   //  Compteur de paquets, titre d'onglet

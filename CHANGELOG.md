@@ -1,5 +1,8 @@
 # Journal des versions
 
+## 1.9.1
+- Correctif : l'étiquette « Nouvelle », la barre de tags et les effets se masquent quand une fenêtre du site (détail d'une carte) s'ouvre par-dessus.
+
 ## 1.9.0
 - Nouvel onglet « WikiMasters+ » dans le menu du site : tous les réglages, l'ordre des tags, le cache et les données.
 - Ordre des tags personnalisable (glisser-déposer dans la barre du révélé ou dans l'onglet) : les raccourcis 1 à 9 suivent cet ordre.
